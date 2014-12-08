@@ -1,10 +1,10 @@
 # This Dockerfile is a modified version from
-# https://github.com/jpetazzo/docker-busybox/blob/master/tarmaker-buildroot/Dockerfile
-# modified to include libc and libssl
+# https://github.com/jllopis/docker-busybox/rootfs/Dockerfile
+# modified to include libstdc++, and to use newer version of buildroot
 FROM ubuntu:10.04
 # This will make it easier to upgrade to the next version of buildroot.
 # You might have to also update the busybox version at the end of this file!
-ENV BUILDROOT_VERSION 2014.05
+ENV BUILDROOT_VERSION 2014.11
 # This will get rid of a build warning related to 'tput'.
 ENV TERM dumb
 RUN locale-gen es_ES.UTF-8
@@ -19,8 +19,8 @@ RUN which python || ln /usr/bin/python3 /usr/bin/python
 RUN echo progress = dot:mega > /.wgetrc
 RUN wget http://buildroot.uclibc.org/downloads/buildroot-$BUILDROOT_VERSION.tar.bz2
 # Check that we got the right tarball (update this when upgrading buildroot!)
-RUN echo "19d81668e20676d87a3f3a762022b104  buildroot-$BUILDROOT_VERSION.tar.bz2" > buildroot.md5
-RUN md5sum --check buildroot.md5
+#RUN echo "19d81668e20676d87a3f3a762022b104  buildroot-$BUILDROOT_VERSION.tar.bz2" > buildroot.md5
+#RUN md5sum --check buildroot.md5
 RUN tar -jxf buildroot-$BUILDROOT_VERSION.tar.bz2
 # This symlink is because WORKDIR doesn't expand $VARS.
 RUN ln -s buildroot-$BUILDROOT_VERSION buildroot
@@ -73,6 +73,12 @@ RUN for CFGVAR in \
     BR2_PACKAGE_ZLIB \
     BR2_PACKAGE_OPENSSL \
     ; do sed -i "s/# $CFGVAR is not set/$CFGVAR=y/" .config ; done
+
+RUN for CFGVAR in \
+    BR2_TOOLCHAIN_BUILDROOT_CXX \
+    BR2_INSTALL_LIBSTDCPP \
+    ; do echo "$CFGVAR=y" >> .config ; done
+
 RUN for CFGVAR in \
     CONFIG_NC \
     CONFIG_NC_SERVER \
@@ -80,7 +86,7 @@ RUN for CFGVAR in \
     CONFIG_BRCTL \
     CONFIG_FEATURE_BRCTL_FANCY \
     CONFIG_FEATURE_BRCTL_SHOW \
-    ; do sed -i "s/# $CFGVAR is not set/$CFGVAR=y/" package/busybox/busybox-1.22.x.config ; done
+    ; do sed -i "s/# $CFGVAR is not set/$CFGVAR=y/" package/busybox/busybox.config ; done
 RUN make olddefconfig
 RUN make
 RUN ln -s /buildroot/output/images/rootfs.tar /rootfs.tar
