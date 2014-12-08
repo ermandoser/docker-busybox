@@ -72,10 +72,10 @@ RUN for CFGVAR in \
     BR2_PACKAGE_IPTABLES \
     BR2_PACKAGE_ZLIB \
     BR2_PACKAGE_OPENSSL \
+    BR2_TOOLCHAIN_BUILDROOT_CXX \
     ; do sed -i "s/# $CFGVAR is not set/$CFGVAR=y/" .config ; done
 
 RUN for CFGVAR in \
-    BR2_TOOLCHAIN_BUILDROOT_CXX \
     BR2_INSTALL_LIBSTDCPP \
     ; do echo "$CFGVAR=y" >> .config ; done
 
