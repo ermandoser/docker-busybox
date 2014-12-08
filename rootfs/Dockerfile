@@ -7,9 +7,9 @@ FROM ubuntu:10.04
 ENV BUILDROOT_VERSION 2014.11
 # This will get rid of a build warning related to 'tput'.
 ENV TERM dumb
-RUN locale-gen es_ES.UTF-8
-ENV LANG es_ES.UTF-8
-ENV LC_ALL es_ES.UTF-8
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update -q
 RUN apt-get install -qy wget build-essential libncurses-dev rsync unzip bc bzip2
